@@ -15,14 +15,15 @@
 #include <QCommandLineParser>
 #include <QDebug>
 #include <QDirIterator>
+#include <QMap>
+
+
 
 void listResources(const QString &path) {
     qDebug() << "Listing resources in:" << path;
-
     QDirIterator it(path, QDirIterator::Subdirectories);
     while (it.hasNext()) {
-        QString filePath = it.next();
-        qDebug() << filePath;
+        qDebug() << it.next();
     }
 }
 
@@ -38,7 +39,7 @@ int main(int argc, char *argv[]) {
     parser.addOption({{"t", "title"}, "Notification title", "string"});
     parser.addOption({{"m", "message"}, "Notification message", "string"});
     parser.addOption({{"p", "priority"}, "Notification priority (low, normal, high)", "low|normal|high"});
-    parser.addOption({{"c", "category"}, "Notification category (system, critical, network)", "system|critical|network"});
+    parser.addOption({{"c", "category"}, "Notification category (system, critical, network, etc.)", "string"});
     parser.addOption({{"d", "delay"}, "Notification delay in milliseconds", "ms", "3000"});
     parser.addOption({{"i", "icons"}, "List available icons in the embedded resources"});
 
@@ -56,44 +57,60 @@ int main(int argc, char *argv[]) {
     QString priority = parser.value("priority").toLower();
     QString category = parser.value("category").toLower();
 
-    int delay = 5000;
-    if (parser.isSet("delay")) {
-        delay = parser.value("delay").toInt();
-    }
+    int delay = parser.isSet("delay") ? parser.value("delay").toInt() : 3000;
 
     if (title.isEmpty() || message.isEmpty()) {
         qWarning() << "Error: --title and --message are required.";
         return 1;
     }
 
+    // ✅ Icon mapping (supports all available icons)
+    QMap<QString, QString> iconMap = {
+        {"system", ":/icons/alarm.png"},
+        {"system64", ":/icons/alarm64.png"},
+        {"alert", ":/icons/alert.png"},
+        {"critical", ":/icons/flammable.png"},
+        {"radiation", ":/icons/non-ionizing-radiation.png"},
+        {"notify", ":/icons/notify.png"},
+        {"delivery", ":/icons/package-delivered.png"},
+        {"plex", ":/icons/plex.png"},
+        {"sign", ":/icons/sign.png"},
+        {"systray", ":/icons/systray.png"},
+        {"urgent", ":/icons/urgent.png"},
+        {"vault", ":/icons/vault.png"},
+        {"vpn", ":/icons/vpn.png"},
+        {"warning", ":/icons/warning.png"},
+        {"warning1", ":/icons/warning1.png"},
+        {"warning2", ":/icons/warning2.png"},
+        {"web", ":/icons/web.png"},
+        {"network", ":/icons/wifi.png"},
+        {"network2", ":/icons/wifi2.jpg"},
+        {"youtube", ":/icons/youtube.png"},
+        {"youtube64", ":/icons/youtube64.png"}
+    };
+
+    // ✅ Select the correct icon based on the category, or use default
+    QString strIconPath = iconMap.value(category, ":/icons/warning.png");
+
     qDebug() << "Title:" << title;
+    qDebug() << "Icon Path:" << strIconPath;
     qDebug() << "Message:" << message;
     qDebug() << "Priority:" << priority;
     qDebug() << "Category:" << category;
     qDebug() << "Delay:" << delay << "ms";
 
-    // ✅ Select icon based on category
-    QIcon icon;
-    if (category == "system") {
-        icon = QIcon(":/icons/system.png");   // Ensure this exists in resources.qrc
-    } else if (category == "critical") {
-        icon = QIcon(":/icons/critical.png"); // Ensure this exists in resources.qrc
-    } else if (category == "network") {
-        icon = QIcon(":/icons/network.png");  // Ensure this exists in resources.qrc
-    } else {
-        icon = QIcon(":/icons/warning.png");  // Default fallback
-    }
-
-    if (icon.isNull()) {
-        qWarning() << "Failed to load icon!";
+    QIcon *pIcon = new QIcon(strIconPath);
+    if (!pIcon || pIcon->isNull()) {
+        qWarning() << "Failed to load icon " << strIconPath;
     }
 
     // ✅ Ensure system tray is available
     if (!QSystemTrayIcon::isSystemTrayAvailable()) {
-        qWarning("System tray is not available! Falling back to notify-send.");
+        qWarning("System tray is not available!");
         return 0;
     }
 
+    const QIcon &icon = *pIcon;
     // ✅ Create and show system tray notification
     QSystemTrayIcon trayIcon;
     trayIcon.setIcon(icon);

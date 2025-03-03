@@ -32,6 +32,29 @@ Options:
                                             embedded resources
 ```
 
+
+## **📌 Example Usage**
+### ✅ **List All Embedded Icons**
+```sh
+notify --icons
+```
+
+### ✅ **Send a System Notification**
+```sh
+notify --title "System Update" --message "A new update is available!" --category system --delay 4000
+```
+
+### ✅ **Send a Critical Notification**
+```sh
+notify --title "Disk Full!" --message "You are running out of disk space!" --category critical --priority high
+```
+
+### ✅ **Send a Network Notification**
+```sh
+notify --title "WiFi Connected" --message "You are now connected to HomeWiFi" --category network
+```
+
+
 <center>
 <img src="doc/img/demo.png" alt="table" />
 </center>
@@ -58,7 +81,7 @@ cd qt-desktop-notify
 mkdir build && cd build
 cmake ..
 make
-../bin/qt-desktop-notify "Hello from Qt!"
+.notify "Hello from Qt!"
 ```
 
 ### Build with qmake
@@ -67,13 +90,13 @@ make
 cd qt-desktop-notify
 qmake
 make
-./bin/qt-desktop-notify "Hello from Qt!"
+notify "Hello from Qt!"
 ```
 
 After compilation, the executable will be located in `bin/`. Running the program:
 
 ```sh
-./bin/qt-desktop-notify -t "Alert Notification" -m "Hello this is an alert!"
+notify -t "Alert Notification" -m "Hello this is an alert!"
 ```
 
 ### Troubleshooting & Fixes
@@ -142,11 +165,11 @@ echo $XDG_SESSION_TYPE
 If it returns `wayland`, try running your app in X11 mode:
 ```sh
 export QT_QPA_PLATFORM=xcb
-./bin/qt-desktop-notify "Hello from Qt!"
+notify "Hello from Qt!"
 ```
 Alternatively, use `Xwayland`:
 ```sh
-QT_QPA_PLATFORM=xcb ./bin/qt-desktop-notify "Hello from Qt!"
+QT_QPA_PLATFORM=xcb notify "Hello from Qt!"
 ```
 
 ### Other Recommendations
@@ -154,3 +177,30 @@ QT_QPA_PLATFORM=xcb ./bin/qt-desktop-notify "Hello from Qt!"
 - If you're on X11, try ensuring a system tray is running.
 - If you need full Qt-based notifications, consider frameworks like KNotifications (`find_package(KF6Notifications)`).
 
+## Test
+
+This code is to test all the categories
+
+```sh
+./bin/notify -t "System Alert" -m "System check completed" -c system && \
+./bin/notify -t "System Alert 64" -m "Running on 64-bit system" -c system64 && \
+./bin/notify -t "Alert" -m "Important system alert!" -c alert && \
+./bin/notify -t "Critical Warning" -m "Flammable substance detected!" -c critical && \
+./bin/notify -t "Radiation Alert" -m "Non-ionizing radiation detected!" -c radiation && \
+./bin/notify -t "Notification" -m "You have a new notification!" -c notify && \
+./bin/notify -t "Package Delivered" -m "Your package has been delivered!" -c delivery && \
+./bin/notify -t "Plex Media" -m "Plex media server is running!" -c plex && \
+./bin/notify -t "Warning Sign" -m "Check the system warnings!" -c sign && \
+./bin/notify -t "System Tray" -m "This is a systray test!" -c systray && \
+./bin/notify -t "Urgent Alert" -m "Immediate attention required!" -c urgent && \
+./bin/notify -t "Secure Vault" -m "Vault access granted!" -c vault && \
+./bin/notify -t "VPN Connected" -m "Your VPN is active!" -c vpn && \
+./bin/notify -t "General Warning" -m "System warning issued!" -c warning && \
+./bin/notify -t "Warning Type 1" -m "System warning type 1 detected!" -c warning1 && \
+./bin/notify -t "Warning Type 2" -m "System warning type 2 detected!" -c warning2 && \
+./bin/notify -t "Web Alert" -m "New activity detected online!" -c web && \
+./bin/notify -t "Network Alert" -m "You are now connected to the network!" -c network && \
+./bin/notify -t "Network Alternative" -m "Secondary network detected!" -c network2 && \
+./bin/notify -t "YouTube Notification" -m "New video uploaded!" -c youtube && \
+./bin/notify -t "YouTube 64" -m "HD video ready to stream!" -c youtube64
+```

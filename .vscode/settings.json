@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "qdiriterator": "cpp",
+        "qcommandlineparser": "cpp"
+    }
+}
