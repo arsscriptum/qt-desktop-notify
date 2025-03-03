@@ -1,0 +1,26 @@
+<!DOCTYPE RCC>
+<RCC version="1.0">
+    <qresource prefix="/">
+        <file>icons/alarm.png</file>
+        <file>icons/alarm64.png</file>
+        <file>icons/alert.png</file>
+        <file>icons/flammable.png</file>
+        <file>icons/non-ionizing-radiation.png</file>
+        <file>icons/notify.png</file>
+        <file>icons/package-delivered.png</file>
+        <file>icons/plex.png</file>
+        <file>icons/sign.png</file>
+        <file>icons/systray.png</file>
+        <file>icons/urgent.png</file>
+        <file>icons/vault.png</file>
+        <file>icons/vpn.png</file>
+        <file>icons/warning.png</file>
+        <file>icons/warning1.png</file>
+        <file>icons/warning2.png</file>
+        <file>icons/web.png</file>
+        <file>icons/wifi.png</file>
+        <file>icons/wifi2.jpg</file>
+        <file>icons/youtube.png</file>
+        <file>icons/youtube64.png</file>
+    </qresource>
+</RCC>

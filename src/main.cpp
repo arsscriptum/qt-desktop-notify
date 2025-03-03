@@ -10,34 +10,96 @@
 
 #include <QApplication>
 #include <QSystemTrayIcon>
-#include <QMessageBox>
+#include <QIcon>
 #include <QTimer>
+#include <QCommandLineParser>
+#include <QDebug>
+#include <QDirIterator>
+
+void listResources(const QString &path) {
+    qDebug() << "Listing resources in:" << path;
+
+    QDirIterator it(path, QDirIterator::Subdirectories);
+    while (it.hasNext()) {
+        QString filePath = it.next();
+        qDebug() << filePath;
+    }
+}
+
 
 int main(int argc, char *argv[]) {
     QApplication app(argc, argv);
+    listResources(":/");
+    // ✅ Set up argument parser
+    QCommandLineParser parser;
+    parser.setApplicationDescription("Qt System Tray Notification");
+    parser.addHelpOption();
+    parser.addVersionOption();
 
-    // Ensure an argument is provided
-    if (argc < 2) {
-        QMessageBox::critical(nullptr, "Error", "Usage: notify '<message>'");
+    parser.addOption({{"t", "title"}, "Notification title", "string"});
+    parser.addOption({{"m", "message"}, "Notification message", "string"});
+    parser.addOption({{"p", "priority"}, "Notification priority (low, normal, high)", "low|normal|high"});
+    parser.addOption({{"c", "category"}, "Notification category (system, critical, network)", "system|critical|network"});
+    parser.addOption({{"d", "delay"}, "Notification delay in milliseconds", "ms", "3000"});
+    parser.addOption({{"i", "icons"}, "icon list"});
+
+    parser.process(app);
+
+    // ✅ Extract arguments
+    QString title = parser.value("title");
+    QString message = parser.value("message");
+    QString priority = parser.value("priority").toLower();
+    QString category = parser.value("category").toLower();
+
+    int delay = 5000;
+    if(parser.isSet("delay")){
+         delay = parser.value("delay").toInt();
+    }
+    
+    if (title.isEmpty() || message.isEmpty()) {
+        qWarning() << "Error: --title and --message are required.";
         return 1;
     }
 
-    QString message = argv[1];
+    qDebug() << "Title:" << title;
+    qDebug() << "Message:" << message;
+    qDebug() << "Priority:" << priority;
+    qDebug() << "Category:" << category;
+    qDebug() << "Delay:" << delay << "ms";
 
-    // Check if system supports tray icon
+    // ✅ Select icon based on category
+    QIcon icon;
+    if (category == "system") {
+        icon = QIcon(":/icons/alarm.png");
+    } else if (category == "critical") {
+        icon = QIcon(":/icons/alert.png");
+    } else if (category == "network") {
+        icon = QIcon(":/icons/wifi.png");
+    } else {
+        icon = QIcon(":/icons/warning1.png");
+    }
+
+    if (icon.isNull()) {
+        qWarning() << "Failed to load icon!";
+    }
+
+    // ✅ Ensure system tray is available
     if (!QSystemTrayIcon::isSystemTrayAvailable()) {
-        QMessageBox::critical(nullptr, "Error", "System tray not available.");
-        return 1;
+        qWarning("System tray is not available! Falling back to notify-send.");
+        return 0;
     }
 
+    // ✅ Create and show system tray notification
     QSystemTrayIcon trayIcon;
-    trayIcon.show();  // Required for notifications on some desktops
+    trayIcon.setIcon(icon);
+    trayIcon.show();
+    trayIcon.showMessage(title, message,icon, delay);
 
-    // Show notification
-    trayIcon.showMessage("Notification", message, QSystemTrayIcon::Information, 3000); // 3 seconds
-
-    // Exit after a short delay to allow notification to be displayed
-    QTimer::singleShot(3500, &app, &QApplication::quit);
+    // ✅ Hide tray icon after notification
+    QTimer::singleShot(delay + 500, [&]() {
+        trayIcon.hide();
+        app.quit();
+    });
 
     return app.exec();
 }

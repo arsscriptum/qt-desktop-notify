@@ -89,3 +89,12 @@ __*.bat
 
 scripts\tmp*.bat
 scripts\__*.bat
+
+.qmake.stash
+.qt/
+CMakeCache.txt
+CMakeFiles/
+Makefile
+cmake_install.cmake
+qrc_resources.cpp
+resources.qrc.depends
