@@ -16,11 +16,19 @@
 #include <QDebug>
 #include <QDirIterator>
 #include <QMap>
+#include <QDebug>
+#include "version.h"
 
-
+#ifdef DEBUG_MODE
+    #pragma message ("Compilinbg in DEBUG MODE")
+    #define DEBUG_PRINT(x) qDebug() << "[DEBUG]: " << x
+#else
+    #pragma message ("Compilinbg in RELEASE MODE")
+    #define DEBUG_PRINT(x)
+#endif
 
 void listResources(const QString &path) {
-    qDebug() << "Listing resources in:" << path;
+    DEBUG_PRINT("Listing resources");
     QDirIterator it(path, QDirIterator::Subdirectories);
     while (it.hasNext()) {
         qDebug() << it.next();
@@ -36,6 +44,9 @@ int main(int argc, char *argv[]) {
     parser.addHelpOption();
     parser.addVersionOption();
 
+    std::string app_version = version::GetAppVersion();
+    QCoreApplication::setApplicationVersion(app_version.c_str());
+
     parser.addOption({{"t", "title"}, "Notification title", "string"});
     parser.addOption({{"m", "message"}, "Notification message", "string"});
     parser.addOption({{"p", "priority"}, "Notification priority (low, normal, high)", "low|normal|high"});
@@ -44,6 +55,8 @@ int main(int argc, char *argv[]) {
     parser.addOption({{"i", "icons"}, "List available icons in the embedded resources"});
 
     parser.process(app);
+
+    DEBUG_PRINT("Debug mode is enabled!");
 
     // ✅ Handle "--icons" flag
     if (parser.isSet("icons")) {
@@ -106,7 +119,7 @@ int main(int argc, char *argv[]) {
 
     // ✅ Ensure system tray is available
     if (!QSystemTrayIcon::isSystemTrayAvailable()) {
-        qWarning("System tray is not available!");
+        DEBUG_PRINT("System tray is not available!");
         return 0;
     }
 

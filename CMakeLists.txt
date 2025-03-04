@@ -7,7 +7,7 @@ set(CMAKE_CXX_STANDARD 17)
 find_package(Qt6 REQUIRED COMPONENTS Widgets)
 
 # Define source files
-set(SOURCES src/main.cpp)
+set(SOURCES src/main.cpp src/version.cpp)
 
 set(MY_BINARY_DIR bin)
 
@@ -30,14 +30,19 @@ set_target_properties(sysnotify_debug PROPERTIES
 set_target_properties(sysnotify PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
 
+# Define Debug Build with Preprocessor Define
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DDEBUG_MODE -D_DEBUG")
+
+set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -DRELEASE_MODE -D_NDEBUG")
+
 # Define Debug & Release Targets
 add_custom_target(debug
-    COMMAND ${CMAKE_COMMAND} -D_DEBUG -DDEBUG -DCMAKE_BUILD_TYPE=Debug ${CMAKE_SOURCE_DIR}
+    COMMAND ${CMAKE_COMMAND} -DCMAKE_BUILD_TYPE=Debug ${CMAKE_SOURCE_DIR}
     COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} --target sysnotify_debug
 )
 
 add_custom_target(release
-    COMMAND ${CMAKE_COMMAND} -D_NDEBUG -DRELEASE -DCMAKE_BUILD_TYPE=Release ${CMAKE_SOURCE_DIR}
+    COMMAND ${CMAKE_COMMAND} -DRELEASE -DCMAKE_BUILD_TYPE=Release ${CMAKE_SOURCE_DIR}
     COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} --target sysnotify
 )
 

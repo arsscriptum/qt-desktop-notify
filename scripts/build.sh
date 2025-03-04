@@ -31,10 +31,10 @@ SCRIPT_DIR="$ROOT_DIR/scripts"
 BIN_DIR="$ROOT_DIR/bin"
 BIN_OUT="$BIN_DIR/sysnotify"
 LOGS_DIR="$ROOT_DIR/logs"
+MAKEFILE_FILE="$ROOT_DIR/Makefile"
 LOG_FILE="$LOGS_DIR/build.log"
-VERSION_FILE=$ROOT_DIR/version.nfo
+VERSION_SCRIPT_FILE="$SCRIPT_DIR/update_version.sh"
 BUILD_FILE=$ROOT_DIR/build.nfo
-
 
 
 # =========================================================
@@ -70,6 +70,13 @@ log_error() {
 
 pushd "$ROOT_DIR" > /dev/null
 
+
+# Remove existing build directory
+if [ -f "$MAKEFILE_FILE" ]; then
+    make clean
+fi
+
+"$VERSION_SCRIPT_FILE"
 # Create new build directory
 mkdir -p "$BIN_DIR"
 mkdir -p "$LOGS_DIR"
@@ -77,8 +84,9 @@ mkdir -p "$LOGS_DIR"
 
 TARGET_TYPE="Release"
 
-if [[ $# -eq 1 && ! "$1" == "debug" ]]; then
+if [[ $# -eq 1 && "$1" == "debug" ]]; then
     TARGET_TYPE="Debug"
+    BIN_OUT="$BIN_DIR/sysnotify_debug"
 fi
 
 # Check if cmake is installed
@@ -98,9 +106,16 @@ fi
 log_info "Generating project files in $TARGET_TYPE mode..."
 cmake -DCMAKE_BUILD_TYPE=$TARGET_TYPE .
 
+if [[ "$TARGET_TYPE" == "Debug" ]]; then
+    log_info "Building project in $TARGET_TYPE mode..."
+    cmake --build . --target sysnotify_debug
+else
+    log_info "Building project in $TARGET_TYPE mode..."
+    cmake --build . --target sysnotify
+fi
+
 # Build the project
-log_info "Building project in $TARGET_TYPE mode..."
-make release
+
 
 if [[ $? -ne 0 ]]; then
     log_error "build failed!"

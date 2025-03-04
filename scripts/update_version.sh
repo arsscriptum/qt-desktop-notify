@@ -6,11 +6,16 @@ SCRIPT_DIR=$(dirname "$SCRIPT_PATH")
 
 tmp_root=$(pushd "$SCRIPT_DIR/.." | awk '{print $1}')
 ROOT_DIR=$(eval echo "$tmp_root")
-ENV_FILE="$ROOT_DIR/.env"
-
+LOGS_DIR="$ROOT_DIR/logs"
+SRC_DIR="$ROOT_DIR/src"
+LOG_FILE="$LOGS_DIR/build.log"
+VERSION_SRC_FILE="$SRC_DIR/version.cpp"
+VERSION_FILE=$ROOT_DIR/version.nfo
+BUILD_FILE=$ROOT_DIR/build.nfo
 YELLOW='\033[0;33m'
 RED='\033[0;31m'
 NC='\033[0m' # No Color
+
 log_version() {
     if [[ -f "$LOG_FILE" ]]; then
         echo "[$(date)] $1" >> "$LOG_FILE"
@@ -18,22 +23,51 @@ log_version() {
     echo -e " ⚡ ${YELLOW}[version]${NC} $1"
 }
 
-if [[ -f "$LOGGING" ]]; then
-   source "$LOGGING"
+
+
+# Create version.cpp dynamically
+cat <<EOF > "$VERSION_SRC_FILE"
+//==============================================================================
+//
+//  version.cpp
+//
+//==============================================================================
+//  automatically generated on {0}
+//==============================================================================
+
+
+#include <string.h>
+#include "version.h"
+
+#ifdef RELEASE_MODE
+unsigned int version::major  = {7};
+unsigned int version::minor  = {8};
+unsigned int version::build  = {9};
+std::string  version::sha    = "{5}";
+std::string  version::branch = "{6}";
+#else
+unsigned int version::major  = {1};
+unsigned int version::minor  = {2};
+unsigned int version::build  = {3};
+std::string  version::sha    = "{5}";
+std::string  version::branch = "{6}";
+#endif // RELEASE_MODE
+EOF
+
+latest_tag=$(git tag | tail -n 1)
+IFS='.' read -r tag_major tag_minor tag_build <<< "$latest_tag"
+
+# Remove existing build directory
+if [ ! -f "$VERSION_FILE" ]; then
+    current_version=$(git tag | tail -n 1)
+    log_version "current_version $current_version. From TAG"
 else
-   echo "[error] missing logging file!"
-   exit 2
+    current_version=$(cat "$VERSION_FILE")
+    log_version "current_version $current_version From VersionFile"
 fi
 
-
-LOGS_DIR="$ROOT_DIR/logs"
-LOG_FILE="$LOGS_DIR/build.log"
-
-VERSION_FILE=$ROOT_DIR/version.nfo
-BUILD_FILE=$ROOT_DIR/build.nfo
-
 # Get current version from version.nfo (assuming the format is major.minor.build)
-current_version=$(cat "$VERSION_FILE")
+
 IFS='.' read -r major minor build <<< "$current_version"
 
 # Increment build number
@@ -53,6 +87,23 @@ last_rev=$(git log --format=%h -2 | tail -n 1)
     echo "$current_branch"
     echo "$head_rev"
 } > "$BUILD_FILE"
+
+# Define values to replace
+DATE=$(date +"%Y-%m-%d %H:%M:%S")
+
+# Replace placeholders with actual values
+sed -i -e "s/{0}/$DATE/g" \
+       -e "s/{1}/$major/g" \
+       -e "s/{2}/$minor/g" \
+       -e "s/{3}/$build/g" \
+       -e "s/{7}/$tag_major/g" \
+       -e "s/{8}/$tag_minor/g" \
+       -e "s/{9}/$tag_build/g" \
+       -e "s|{5}|$head_rev|g" \
+       -e "s|{6}|$current_branch|g" \
+       "$VERSION_SRC_FILE"
+
+echo "Generated: $VERSION_SRC_FILE"
 
 
 log_version "Version updated to $new_version"
