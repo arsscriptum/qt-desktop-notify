@@ -1,70 +1,65 @@
+
 <center>
 <img src="doc/img/logo.png" alt="table" />
 </center>
 <br>
 
+# sysnotify Qt Desktop Notify
 
-# Qt Desktop Notify
+A program to display notifications in Linux.
 
-A program to diplay notifications in Linux
-
-
-## Usage
-
+## **📌 Usage**
+```sh
+sysnotify [options]
 ```
-Usage: ./bin/notify [options]
+
 Qt System Tray Notification
 
-Options:
-  -h, --help                                Displays help on commandline
-                                            options.
-  --help-all                                Displays help, including generic Qt
-                                            options.
-  -v, --version                             Displays version information.
-  -t, --title <string>                      Notification title
-  -m, --message <string>                    Notification message
-  -p, --priority <low|normal|high>          Notification priority (low, normal,
-                                            high)
-  -c, --category <system|critical|network>  Notification category (system,
-                                            critical, network)
-  -d, --delay <ms>                          Notification delay in milliseconds
-  -i, --icons                               List available icons in the
-                                            embedded resources
-```
+### **Options**
+| Option | Description |
+|--------|-------------|
+| `-h, --help` | Displays help on command line options. |
+| `--help-all` | Displays help, including generic Qt options. |
+| `-v, --version` | Displays version information. |
+| `-t, --title <string>` | Notification title. |
+| `-m, --message <string>` | Notification message. |
+| `-p, --priority <low|normal|high>` | Notification priority (low, normal, high). |
+| `-c, --category <system|critical|network>` | Notification category (system, critical, network). |
+| `-d, --delay <ms>` | Notification delay in milliseconds. |
+| `-i, --icons` | List available icons in the embedded resources. |
 
+---
 
 ## **📌 Example Usage**
 ### ✅ **List All Embedded Icons**
 ```sh
-notify --icons
+sysnotify --icons
 ```
 
 ### ✅ **Send a System Notification**
 ```sh
-notify --title "System Update" --message "A new update is available!" --category system --delay 4000
+sysnotify --title "System Update" --message "A new update is available!" --category system --delay 4000
 ```
 
 ### ✅ **Send a Critical Notification**
 ```sh
-notify --title "Disk Full!" --message "You are running out of disk space!" --category critical --priority high
+sysnotify --title "Disk Full!" --message "You are running out of disk space!" --category critical --priority high
 ```
 
 ### ✅ **Send a Network Notification**
 ```sh
-notify --title "WiFi Connected" --message "You are now connected to HomeWiFi" --category network
+sysnotify --title "WiFi Connected" --message "You are now connected to HomeWiFi" --category network
 ```
-
 
 <center>
 <img src="doc/img/demo.png" alt="table" />
 </center>
 <br>
 
+---
 
-
-### The project structure:
-
-```
+## **📌 Project Structure**
+```sh
 qt-desktop-notify
 ├── CMakeLists.txt
 ├── notify.pro
@@ -73,40 +68,121 @@ qt-desktop-notify
 └── bin  (binary output)
 ```
 
+---
 
-### Build with CMake
+## **📌 Build Instructions - Command Line**
 
-```sh
-cd qt-desktop-notify
-mkdir build && cd build
-cmake ..
-make
-.notify "Hello from Qt!"
-```
-
-### Build with qmake
+### Release
 
 ```sh
 cd qt-desktop-notify
-qmake
-make
-notify "Hello from Qt!"
+./scripts/build.sh
 ```
 
-After compilation, the executable will be located in `bin/`. Running the program:
+### Debug
 
 ```sh
-notify -t "Alert Notification" -m "Hello this is an alert!"
+cd qt-desktop-notify
+./scripts/build.sh debug
 ```
 
-### Troubleshooting & Fixes
+## **📌 Build Instructions - VSCODE**
 
-If `QSystemTrayIcon::isSystemTrayAvailable()` returns `false`, it means your desktop environment (DE) may not support system tray notifications by default or requires additional configuration.
+### Use the tasks Build_Debug / Build_Release
 
-First, try running a system tray (`trayer` or enabling AppIndicators for GNOME).
 
-### 1. Check if Your Desktop Environment Supports System Tray
+1. Click Terminal
+2. Run Task 
+3. Build_Release / Build_Debug
 
+
+<center>
+<img src="doc/img/vscodetasks.png" alt="table" />
+</center>
+<br>
+
+## **📌 You can Add Keyboard Shortcuts to build in VSCODE
+
+1. Click File
+2. Run Preferences 
+3. Keyboard Shortcuts **OR** CTRL+K, CTRL+S
+
+<center>
+<img src="doc/img/vscodetasks_short.png" alt="table" />
+</center>
+<br>
+
+4. Click on the Edt JSON button 
+
+<center>
+<img src="doc/img/vscodetasks_short1.png" alt="table" />
+</center>
+<br>
+
+5. Add your shortcut 
+
+```json
+    {
+        "key": "ctrl+shift+w",
+        "command": "workbench.action.tasks.runTask",
+        "args": "Build_Release"
+    },    
+```
+
+## Automatic Version Update
+
+There's a script named ```scripts/update_version.sh``` that is called when you build. It will generate the file **version.cpp** with the latest version.
+
+The version is updated everytime you build to keep track of changes, I find this usefull when you want to make sure you ee wa really updated.
+
+
+<center>
+<img src="doc/img/version.png" alt="table" />
+</center>
+<br>
+
+<center>
+<img src="doc/img/version_update.png" alt="table" />
+</center>
+<br>
+
+### Getting the Binary Version
+
+Use the ```-v``` option
+
+<center>
+<img src="doc/img/ver_dbg.png" alt="table" />
+</center>
+<br>
+
+#### Note that in Release, the Version is always based on the last tag
+
+<center>
+<img src="doc/img/ver_rel.png" alt="table" />
+</center>
+<br>
+
+
+Run the program:
+```sh
+sysnotify --title "Alert Notification" --message "Hello, this is an alert!"
+```
+
+
+## **📌 Installing the Binary**
+After compiling, install the binary system-wide:
+```sh
+sudo make install
+```
+This will copy the binary to `/usr/bin/notify`, so you can run it from anywhere:
+```sh
+notify --title "Test" --message "This is a notification!"
+```
+
+---
+
+## **📌 Troubleshooting & Fixes**
+### **1️⃣ Check if Your Desktop Environment Supports System Tray**
 Some minimal Linux desktop environments (like i3, Sway, Openbox, Wayland-based desktops) may not have a system tray by default.
 
 Try running:
@@ -119,88 +195,51 @@ dbus-send --print-reply --dest=org.freedesktop.DBus / org.freedesktop.DBus.ListN
 ```
 If there is no system tray service running, Qt notifications won't work.
 
-## Enable a System Tray Service**
+### **2️⃣ Enable a System Tray Service**
+If your environment does not have `org.kde.StatusNotifierWatcher`, you can try running a system tray manually.
 
-Since your environment does not have `org.kde.StatusNotifierWatcher`, you can try running a system tray manually.
-
-### **Try Running a System Tray in Your DE**
-1. **For GNOME Users** (Install AppIndicator Extension)
-   ```sh
-   sudo apt install gnome-shell-extension-appindicator
-   gnome-extensions enable appindicatorsupport@rgcjonas.gmail.com
-   ```
-   Then **restart GNOME** (log out and log in).
-
-2. **For XFCE / i3 / Openbox** (Use `stalonetray` or `trayer`)
-   ```sh
-   sudo apt install trayer
-   trayer --edge top --align right --SetDockType true --expand true
-   ```
-
-3. **For KDE Users** (Ensure Plasma's System Tray is Enabled)
-   ```sh
-   kquitapp5 plasmashell && kstart5 plasmashell
-   ```
-
-Then, **try running your Qt notification app again**.
-
-Fix: If you are on a minimal DE, you might need to install a system tray:
-- KDE Plasma: Supported natively.
-- GNOME: Requires `gnome-shell-extension-appindicator` (`sudo apt install gnome-shell-extension-appindicator`).
-- i3/Sway: Install `trayer` or `stalonetray`.
-  ```sh
-  sudo apt install trayer
-  trayer --edge top --align right --SetDockType true --expand true
-  ```
-
-
-#### 2. Check If You're Using Wayland (Instead of X11)
-
-Qt's `QSystemTrayIcon` does not work on Wayland by default.
-
-To check if you're using Wayland:
+#### **For GNOME Users (Install AppIndicator Extension)**
 ```sh
-echo $XDG_SESSION_TYPE
+sudo apt install gnome-shell-extension-appindicator
+gnome-extensions enable appindicatorsupport@rgcjonas.gmail.com
 ```
-If it returns `wayland`, try running your app in X11 mode:
+Then **restart GNOME** (log out and log in).
+
+#### **For XFCE / i3 / Openbox Users (Use `stalonetray` or `trayer`)**
 ```sh
-export QT_QPA_PLATFORM=xcb
-notify "Hello from Qt!"
-```
-Alternatively, use `Xwayland`:
-```sh
-QT_QPA_PLATFORM=xcb notify "Hello from Qt!"
+sudo apt install trayer
+trayer --edge top --align right --SetDockType true --expand true
 ```
 
-### Other Recommendations
-
-- If you're on X11, try ensuring a system tray is running.
-- If you need full Qt-based notifications, consider frameworks like KNotifications (`find_package(KF6Notifications)`).
-
-## Test
-
-This code is to test all the categories
-
+#### **For KDE Users (Ensure Plasma's System Tray is Enabled)**
 ```sh
-./bin/notify -t "System Alert" -m "System check completed" -c system && \
-./bin/notify -t "System Alert 64" -m "Running on 64-bit system" -c system64 && \
-./bin/notify -t "Alert" -m "Important system alert!" -c alert && \
-./bin/notify -t "Critical Warning" -m "Flammable substance detected!" -c critical && \
-./bin/notify -t "Radiation Alert" -m "Non-ionizing radiation detected!" -c radiation && \
-./bin/notify -t "Notification" -m "You have a new notification!" -c notify && \
-./bin/notify -t "Package Delivered" -m "Your package has been delivered!" -c delivery && \
-./bin/notify -t "Plex Media" -m "Plex media server is running!" -c plex && \
-./bin/notify -t "Warning Sign" -m "Check the system warnings!" -c sign && \
-./bin/notify -t "System Tray" -m "This is a systray test!" -c systray && \
-./bin/notify -t "Urgent Alert" -m "Immediate attention required!" -c urgent && \
-./bin/notify -t "Secure Vault" -m "Vault access granted!" -c vault && \
-./bin/notify -t "VPN Connected" -m "Your VPN is active!" -c vpn && \
-./bin/notify -t "General Warning" -m "System warning issued!" -c warning && \
-./bin/notify -t "Warning Type 1" -m "System warning type 1 detected!" -c warning1 && \
-./bin/notify -t "Warning Type 2" -m "System warning type 2 detected!" -c warning2 && \
-./bin/notify -t "Web Alert" -m "New activity detected online!" -c web && \
-./bin/notify -t "Network Alert" -m "You are now connected to the network!" -c network && \
-./bin/notify -t "Network Alternative" -m "Secondary network detected!" -c network2 && \
-./bin/notify -t "YouTube Notification" -m "New video uploaded!" -c youtube && \
-./bin/notify -t "YouTube 64" -m "HD video ready to stream!" -c youtube64
+kquitapp5 plasmashell && kstart5 plasmashell
+```
+
+---
+
+## **📌 Testing All Notification Categories**
+This script tests every notification category:
+```sh
+notify --title "System Alert" --message "System check completed" --category system && \
+notify --title "System Alert 64" --message "Running on 64-bit system" --category system64 && \
+notify --title "Alert" --message "Important system alert!" --category alert && \
+notify --title "Critical Warning" --message "Flammable substance detected!" --category critical && \
+notify --title "Radiation Alert" --message "Non-ionizing radiation detected!" --category radiation && \
+notify --title "Notification" --message "You have a new notification!" --category notify && \
+notify --title "Package Delivered" --message "Your package has been delivered!" --category delivery && \
+notify --title "Plex Media" --message "Plex media server is running!" --category plex && \
+notify --title "Warning Sign" --message "Check the system warnings!" --category sign && \
+notify --title "System Tray" --message "This is a systray test!" --category systray && \
+notify --title "Urgent Alert" --message "Immediate attention required!" --category urgent && \
+notify --title "Secure Vault" --message "Vault access granted!" --category vault && \
+notify --title "VPN Connected" --message "Your VPN is active!" --category vpn && \
+notify --title "General Warning" --message "System warning issued!" --category warning && \
+notify --title "Warning Type 1" --message "System warning type 1 detected!" --category warning1 && \
+notify --title "Warning Type 2" --message "System warning type 2 detected!" --category warning2 && \
+notify --title "Web Alert" --message "New activity detected online!" --category web && \
+notify --title "Network Alert" --message "You are now connected to the network!" --category network && \
+notify --title "Network Alternative" --message "Secondary network detected!" --category network2 && \
+notify --title "YouTube Notification" --message "New video uploaded!" --category youtube && \
+notify --title "YouTube 64" --message "HD video ready to stream!" --category youtube64
 ```

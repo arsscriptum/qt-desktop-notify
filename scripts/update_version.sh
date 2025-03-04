@@ -72,10 +72,10 @@ IFS='.' read -r major minor build <<< "$current_version"
 
 # Increment build number
 build=$((build + 1))
-new_version="$major.$minor.$build"
-
+debug_version="$major.$minor.$build"
+release_version="$tag_major.$tag_minor.$tag_build"
 # Write the new version back to the version.nfo file
-echo "$new_version" > "$VERSION_FILE"
+echo "$debug_version" > "$VERSION_FILE"
 
 # Get Git info
 current_branch=$(git branch --show-current)
@@ -103,8 +103,13 @@ sed -i -e "s/{0}/$DATE/g" \
        -e "s|{6}|$current_branch|g" \
        "$VERSION_SRC_FILE"
 
-echo "Generated: $VERSION_SRC_FILE"
 
-
-log_version "Version updated to $new_version"
-log_version "Branch and revision info saved to $BUILD_FILE"
+log_version " ====================================== "
+log_version "   ⚠️   ⚠️   ⚠️   ⚠️   ⚠️   ⚠️   ⚠️   ⚠️   "
+log_version "Generated: $VERSION_SRC_FILE"
+log_version "DEBUG Version updated to $debug_version"
+log_version "RELEASE Version updated to $release_version"
+log_version "Branch and revision info saved."
+log_version "Get Exe Version by typing 'sysnoptify -v'"
+log_version "   ⚠️   ⚠️   ⚠️   ⚠️   ⚠️   ⚠️   ⚠️   ⚠️   "
+log_version " ====================================== "

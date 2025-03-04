@@ -44,7 +44,7 @@ int main(int argc, char *argv[]) {
     parser.addHelpOption();
     parser.addVersionOption();
 
-    std::string app_version = version::GetAppVersion();
+    std::string app_version = version::GetAppVersion(true);
     QCoreApplication::setApplicationVersion(app_version.c_str());
 
     parser.addOption({{"t", "title"}, "Notification title", "string"});

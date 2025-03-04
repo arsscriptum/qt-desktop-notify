@@ -4,6 +4,8 @@
     "html.hover.references": false,
     "files.associations": {
         "qdebug": "cpp",
-        "iosfwd": "cpp"
+        "iosfwd": "cpp",
+        "qsystemtrayicon": "cpp",
+        "qmap": "cpp"
     }
 }
