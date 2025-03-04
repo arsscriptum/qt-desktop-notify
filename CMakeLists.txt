@@ -7,7 +7,7 @@ set(CMAKE_CXX_STANDARD 17)
 find_package(Qt6 REQUIRED COMPONENTS Widgets)
 
 # Define source files
-set(SOURCES src/main.cpp src/version.cpp)
+set(SOURCES src/main.cpp src/version.cpp src/resources.cpp)
 
 set(MY_BINARY_DIR bin)
 

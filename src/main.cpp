@@ -15,7 +15,9 @@
 #include <QDebug>
 #include <QDirIterator>
 #include <QMap>
+
 #include "version.h"
+#include "resources.h"
 
 #if defined(QT_NO_DEBUG_OUTPUT)
 #  undef qDebug
@@ -41,6 +43,8 @@ void listResources(const QString &path) {
 
 int main(int argc, char *argv[]) {
     QApplication app(argc, argv);
+
+    ResourcesUtils::Initialize();
 
     // ✅ Set up argument parser
     QCommandLineParser parser;
@@ -75,21 +79,42 @@ int main(int argc, char *argv[]) {
     QString category = parser.value("category").toLower();
     int delay = parser.isSet("delay") ? parser.value("delay").toInt() : 3000;
 
-    // ✅ Define preset notifications (1-5)
+    // ✅ Define preset notifications (1-15)
     QMap<int, QPair<QString, QString>> presetMap = {
         {1, {"VPN DISCONNECTED", "VPN connection was disconnected."}},
         {2, {"TORRENTS COMPLETED", "Download Completed."}},
         {3, {"LOW BATTERY", "Battery level is below 10%!"}},
         {4, {"UPDATE AVAILABLE", "A new system update is ready to install."}},
-        {5, {"SECURITY WARNING", "Unusual login activity detected."}}
+        {5, {"SECURITY WARNING", "Unusual login activity detected."}},
+        {6, {"EMAIL RECEIVED", "You have a new unread email."}},
+        {7, {"NEW MESSAGE", "You received a new instant message."}},
+        {8, {"PRINTER ERROR", "Printer is out of paper or jammed."}},
+        {9, {"WEATHER ALERT", "Severe weather warning issued."}},
+        {10, {"USB DEVICE CONNECTED", "A new USB device has been detected."}},
+        {11, {"DISK ERROR", "Disk read/write failure detected!"}},
+        {12, {"MEETING REMINDER", "Your scheduled meeting is starting soon."}},
+        {13, {"FILE DOWNLOAD STARTED", "A file download has been initiated."}},
+        {14, {"FILE DOWNLOAD COMPLETE", "Your file download has finished."}},
+        {15, {"LOW MEMORY", "System memory usage is critically high."}}
     };
 
+    // ✅ Define preset icons
     QMap<int, QString> presetIcons = {
-        {1, ":/icons/vpn.png"},
-        {2, ":/icons/alert.png"},
-        {3, ":/icons/warning.png"},
-        {4, ":/icons/non-ionizing-radiation.png"},
-        {5, ":/icons/flammable.png"}
+        {1, "vpn.png"},
+        {2, "alert.png"},
+        {3, "warning.png"},
+        {4, "non-ionizing-radiation.png"},
+        {5, "flammable.png"},
+        {6, "package-delivered.png"},
+        {7, "youtube.png"},
+        {8, "urgent.png"},
+        {9, "alarm64.png"},
+        {10, "warning1.png"},
+        {11, "vault.png"},
+        {12, "warning.png"},
+        {13, "sign.png"},
+        {14, "package-delivered.png"},
+        {15, "warning2.png"}
     };
 
     // ✅ Apply preset if selected
@@ -101,34 +126,41 @@ int main(int argc, char *argv[]) {
 
     // ✅ Icon mapping for categories
     QMap<QString, QString> iconMap = {
-        {"system", ":/icons/flammable.png"},
-        {"alert", ":/icons/alert.png"},
-        {"critical", ":/icons/flammable.png"},
-        {"radiation", ":/icons/non-ionizing-radiation.png"},
-        {"notify", ":/icons/notify.png"},
-        {"vpn", ":/icons/vpn.png"},
-        {"warning", ":/icons/warning.png"},
-        {"network", ":/icons/wifi.png"}
+        {"system", "flammable.png"},
+        {"alert", "alert.png"},
+        {"critical", "flammable.png"},
+        {"radiation", "non-ionizing-radiation.png"},
+        {"notify", "notify.png"},
+        {"vpn", "vpn.png"},
+        {"warning", "warning.png"},
+        {"network", "wifi.png"}
     };
 
+    // ✅ Apply preset if selected
+    if (presetMap.contains(preset)) {
+        title = presetMap[preset].first;
+        message = presetMap[preset].second;
+        category = "";  // Ignore category if preset is used
+    }
+
     // ✅ Select icon based on preset or category
-    QString strIconPath;
+    QString resourcePath;
     if (presetIcons.contains(preset)) {
-        strIconPath = presetIcons[preset];
+        resourcePath = ResourcesUtils::get_iconPath(presetIcons[preset]);
     } else {
-        strIconPath = iconMap.value(category, ":/icons/warning.png");
+        resourcePath = ResourcesUtils::get_iconPath(iconMap.value(category, "warning.png"));
     }
 
     DEBUG_LOG() << "Title:" << title;
-    DEBUG_LOG() << "Icon Path:" << strIconPath;
+    DEBUG_LOG() << "Icon Path:" << resourcePath;
     DEBUG_LOG() << "Message:" << message;
     DEBUG_LOG() << "Preset:" << preset;
     DEBUG_LOG() << "Category:" << category;
     DEBUG_LOG() << "Delay:" << delay << "ms";
 
-    QIcon *pIcon = new QIcon(strIconPath);
+    QIcon *pIcon = new QIcon(resourcePath);
     if (!pIcon || pIcon->isNull()) {
-        qWarning() << "Failed to load icon " << strIconPath;
+        qWarning() << "Failed to load icon " << resourcePath;
     }
 
     // ✅ Ensure system tray is available
@@ -149,6 +181,8 @@ int main(int argc, char *argv[]) {
         trayIcon.hide();
         app.quit();
     });
+    
+    ResourcesUtils::Destroy();
 
     return app.exec();
 }
