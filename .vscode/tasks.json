@@ -29,6 +29,35 @@
         "panel": "shared"
       },
       "problemMatcher": []
-    }   
+    },    
+    {
+      "label": "Run_Test_Icons",
+      "type": "shell",
+      "command": "./bin/sysnotify_debug",
+      "args": ["-i"],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Run_Preset_01",
+      "command": "./bin/sysnotify_debug",
+      "args": ["-p 1"],
+      "group": {
+        "kind": "build",
+        "isDefault": false
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    } 
   ]
 }

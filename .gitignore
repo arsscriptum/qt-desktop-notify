@@ -38,6 +38,7 @@ modules/ref.todelete/**
 build/.vs/
 build/.vs/**
 
+src/version.cpp
 build/CompiledResources/
 build/CompiledResources/**
 

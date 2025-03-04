@@ -34,7 +34,9 @@ LOGS_DIR="$ROOT_DIR/logs"
 MAKEFILE_FILE="$ROOT_DIR/Makefile"
 LOG_FILE="$LOGS_DIR/build.log"
 VERSION_SCRIPT_FILE="$SCRIPT_DIR/update_version.sh"
-BUILD_FILE=$ROOT_DIR/build.nfo
+GENERATE_RES_SCRIPT_FILE="$SCRIPT_DIR/generate_qrc.sh"
+QRC_FILE="$ROOT_DIR/resources.qrc"
+QRC_SRC_FILE="$ROOT_DIR/qrc_resources.cpp"
 
 
 # =========================================================
@@ -76,7 +78,14 @@ if [ -f "$MAKEFILE_FILE" ]; then
     make clean
 fi
 
+"$GENERATE_RES_SCRIPT_FILE"
 "$VERSION_SCRIPT_FILE"
+
+RCC_BIN=$(which rcc)
+
+$RCC_BIN "$QRC_FILE" -o "$QRC_SRC_FILE"
+
+
 # Create new build directory
 mkdir -p "$BIN_DIR"
 mkdir -p "$LOGS_DIR"

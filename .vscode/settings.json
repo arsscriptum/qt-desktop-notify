@@ -6,6 +6,9 @@
         "qdebug": "cpp",
         "iosfwd": "cpp",
         "qsystemtrayicon": "cpp",
-        "qmap": "cpp"
+        "qmap": "cpp",
+        "qapplication": "cpp",
+        "qdiriterator": "cpp",
+        "qcommandlineparser": "cpp"
     }
 }
