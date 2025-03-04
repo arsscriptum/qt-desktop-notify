@@ -98,3 +98,9 @@ Makefile
 cmake_install.cmake
 qrc_resources.cpp
 resources.qrc.depends
+
+# Version Files
+build.nfo
+version.nfo
+
+

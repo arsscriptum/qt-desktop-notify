@@ -1,6 +1,5 @@
 {
-    "files.associations": {
-        "qdiriterator": "cpp",
-        "qcommandlineparser": "cpp"
-    }
+    "editor.hover.enabled": false,
+    "html.hover.documentation": false,
+    "html.hover.references": false
 }
