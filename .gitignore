@@ -38,7 +38,11 @@ modules/ref.todelete/**
 build/.vs/
 build/.vs/**
 
+# Automatically Generated Files
+resources_qrc.cpp
+src/resources_qrc.cpp
 src/version.cpp
+
 build/CompiledResources/
 build/CompiledResources/**
 
